@@ -44,7 +44,7 @@ def hls_select(img, channel='s', thresh=(0, 255)):
     ret, binary_output = cv2.threshold(channel, thresh[0], thresh[1], cv2.THRESH_BINARY)
 
     return binary_output
-    
+
 
 def luv_select(img, thresh=(0, 255)):
     """使用LUV颜色空间的L(lightness亮度)通道进行阈值过滤"""
@@ -70,28 +70,3 @@ def thresholding(img):
     combined[(x_thresh == 255) | (hls_thresh == 255) | ((mag_thresh == 255) & (luv_thresh == 255))] = 255
 
     return combined
-
-
-if __name__ == '__main__':
-    import os
-    import laneline_detection.utils as utils
-
-    test_images_dir_ = '../Test Images/After Calibrate'
-    save_result_dir = '../Test Images/After Thresholding'
-
-    # 获取 测试图片
-    test_images_ = utils.get_images_by_dir(test_images_dir_)
-
-    # 阈值化 测试图片
-    thresholded_ = []
-    for img_ in test_images_:
-        img_ = thresholding(img_)
-        thresholded_.append(img_)
-
-    # 创建 储存文件夹
-    if not os.path.exists(save_result_dir):
-        os.mkdir(save_result_dir)
-
-    # 储存 校正后的图像
-    for i_, img_ in enumerate(thresholded_):
-        cv2.imwrite(f'{save_result_dir}/{utils.get_files_by_dir(test_images_dir_)[i_]}', img_)
