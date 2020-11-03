@@ -2,11 +2,12 @@ import cv2
 import numpy as np
 
 
-def camera_calibrate(images: [np.ndarray], grid):
+def camera_calibrate(images: [np.ndarray], grid, visualize=False):
     """Generate (Object points, Image points) by ChessboardCorners
 
     :param images: Chess board images. 10-20 imgs Recommended. Must be an 8-bit color image.
     :param grid: Number of inner corners per a chessboard row and column.
+    :param visualize: show chessboard corners
     :return: (Object points, Image points)
     """
     object_points = []
@@ -30,7 +31,7 @@ def camera_calibrate(images: [np.ndarray], grid):
             img_points.append(corners)
 
     '''Display ChessboardCorners Images'''
-    if True:
+    if visualize:
         for img in chessboard_corners_img:
             cv2.imshow('FindChessboardCorners', img)
             cv2.waitKey(500)
@@ -51,34 +52,3 @@ def calibrate_distort(img: np.ndarray, object_points, img_points) -> np.ndarray:
     ret, mtx, dist, rvecs, tvecs = cv2.calibrateCamera(object_points, img_points, img.shape[1::-1], None, None)
     dst = cv2.undistort(img, mtx, dist, None, mtx)
     return dst
-
-
-if __name__ == '__main__':
-    import os
-    import laneline_detection.utils as utils
-
-    checkerboard_dir_ = '../Camera Calibration'
-    test_images_dir_ = '../Test Images'
-
-    # 获取 棋盘格图片
-    cal_images_ = utils.get_images_by_dir(checkerboard_dir_)
-
-    # 获取 测试图片
-    test_images_ = utils.get_images_by_dir(test_images_dir_)
-
-    # 计算 object_points, img_points
-    object_points_, img_points_ = camera_calibrate(cal_images_, grid=(9, 6))
-
-    # 校正 测试图片
-    undistorted_ = []
-    for img_ in test_images_:
-        img_ = calibrate_distort(img_, object_points_, img_points_)
-        undistorted_.append(img_)
-
-    # 创建 储存文件夹 ${test_images_dir_}/After Calibrate
-    if not os.path.exists(f'{test_images_dir_}/After Calibrate'):
-        os.mkdir(f'{test_images_dir_}/After Calibrate')
-
-    # 储存 校正后的图像
-    for i_, img_ in enumerate(undistorted_):
-        cv2.imwrite(f'{test_images_dir_}/After Calibrate/{utils.get_files_by_dir(test_images_dir_)[i_]}', img_)
