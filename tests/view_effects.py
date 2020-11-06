@@ -1,6 +1,11 @@
+import os
 import laneline_detection.utils as utils
 
 result_save_dir = '../testSource/6.Effect_Viewing'
+
+# 创建 结果储存文件夹
+if not os.path.exists(result_save_dir):
+    os.mkdir(result_save_dir)
 
 compare_list = [
     {  # <原图>对比<已矫正畸变>
